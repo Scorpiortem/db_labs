@@ -1,1 +1,2 @@
 select * from city;
+select * from city where name like 'c%';
