@@ -1,2 +1,2 @@
 select * from city;
-select * from city where name like 'a%';
+select * from city where name like 'c%';
