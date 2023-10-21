@@ -1,0 +1,3 @@
+USE cd;
+SELECT firstname AS Имя_или_Объект FROM members WHERE firstname != 'Guest'
+UNION SELECT facility AS Имя FROM facilities;
