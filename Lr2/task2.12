@@ -1,2 +1,2 @@
 USE cd;
-SELECT MAX(joindate) AS Последняя_регистарция FROM members;
+SELECT MAX(joindate) AS 'Последняя регистарция' FROM members;
