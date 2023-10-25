@@ -1,0 +1,8 @@
+/* Выберите список всех членов, включая человека, который их 
+рекомендовал (если таковой имеется), без использования каких-либо 
+объединений. Исключите в списке дубликаты, упорядочите лист по ФИО (==   
+имя + фамилия)*/
+USE cd;
+SELECT DISTINCT concat(mem.surname, ' ', mem.firstname) AS 'ФИО участника', concat(rec.surname, ' ', rec.firstname) AS 'ФИО порекомендовавшего' FROM members mem
+JOIN members rec ON mem.recommendedby = rec.memid 
+WHERE mem.memid != 0 ORDER BY 'ФИО участника' AND 'ФИО порекомендовавшего';
