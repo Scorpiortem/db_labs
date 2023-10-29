@@ -6,11 +6,13 @@
 (указанные затраты указаны за получасовой «интервал»), а идентификатор 
 гостя всегда имеет идентификатор 0*/
 USE cd;
-SELECT DISTINCT concat(fac.facility, ' ', mem.firstname) AS 'Заведение и имя', CASE
-WHEN mem.memid = 0 THEN fac.guestcost
-ELSE fac.membercost
-END AS 'Стоимость'
-FROM members mem 
-JOIN bookings book ON mem.memid = book.memid
-JOIN facilities fac ON fac.facid = book.facid
-WHERE DATE(book.starttime) = '2012-09-14' AND fac.membercost > 30 AND fac.guestcost > 30;
+SELECT DISTINCT CONCAT(fac.facility, ' ', mem.firstname) AS 'Заведение и имя',
+CASE
+	WHEN mem.memid = 0 THEN fac.guestcost * book.slots
+	ELSE fac.membercost * book.slots
+END AS cost
+FROM bookings AS book
+JOIN facilities AS fac ON book.facid = fac.facid
+JOIN members AS mem ON book.memid = mem.memid
+WHERE DATE(book.starttime) = '2012-09-14' AND (fac.guestcost > 30 OR fac.membercost > 30)
+ORDER BY cost DESC;
