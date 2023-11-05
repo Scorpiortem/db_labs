@@ -3,6 +3,8 @@
 объединений. Исключите в списке дубликаты, упорядочите лист по ФИО (==   
 имя + фамилия)*/
 USE cd;
-SELECT DISTINCT concat(mem.surname, ' ', mem.firstname) AS 'ФИО участника', concat(rec.surname, ' ', rec.firstname) AS 'ФИО порекомендовавшего' FROM members mem
-JOIN members rec ON mem.recommendedby = rec.memid 
-WHERE mem.memid != 0 ORDER BY 'ФИО участника' AND 'ФИО порекомендовавшего';
+SELECT CONCAT(mem.firstname, ' ', mem.surname) AS Member_Full_name,
+(SELECT CONCAT(rec.firstname, ' ', rec.surname) FROM members rec
+WHERE rec.memid = mem.recommendedby) AS Recommender_Full_name FROM members  mem 
+WHERE mem.memid != 0
+ORDER BY Member_Full_name;
