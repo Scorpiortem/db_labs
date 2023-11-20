@@ -4,9 +4,9 @@
 отсортированных по идентификатору объекта. Попробуйте отформатировать 
 часы с точностью до двух десятичных знаков.*/
 USE cd;
-SELECT book.facid, f.facility, 
+SELECT book.facid AS 'ID объекта', fac.facility AS 'Название объекта', 
        ROUND(SUM(book.slots) / 2, 2) AS 'Общее кол-во часов'
-FROM bookings as book
-INNER JOIN facilities as f ON book.facid = f.facid
-GROUP BY book.facid, f.facility
+FROM bookings AS book
+INNER JOIN facilities AS fac ON book.facid = fac.facid
+GROUP BY book.facid, fac.facility
 ORDER BY book.facid;
