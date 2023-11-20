@@ -1,10 +1,7 @@
 /*Составьте список общего количества бронирований 
 на каждый объект в месяц в 2012 году.*/
 USE cd;
-SELECT facid, MONTH(starttime) AS Month, COUNT(*) AS 'Кол-во бронирований'
-FROM bookings
-WHERE starttime >= '2012-01-01' AND starttime <= '2013-01-01'
-GROUP BY facid, Month
-ORDER BY facid, Month;
-/*Сделал таким образом, что для каждого месяца выводится раздельное кол-во бронирований,
-но при этом от повторяющегося facid я решил не избавляться, так как, по-моему, это не портит информативность выборки*/
+SELECT fac.facility AS 'Объект', MONTH(book.starttime) AS 'Месяц', SUM(book.slots) AS 'Кол-во бронирований'
+FROM facilities AS fac
+INNER JOIN bookings AS book ON fac.facid = book.facid WHERE YEAR(book.starttime) = 2012
+GROUP BY fac.facility, MONTH(book.starttime); 
