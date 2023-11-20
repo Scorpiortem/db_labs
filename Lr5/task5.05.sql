@@ -2,6 +2,6 @@
 USE cd;
 SELECT facility AS 'Объекты клуба', SUM(book.slots) AS 'Кол-во аренд'
 FROM facilities AS fac
-LEFT JOIN bookings AS book ON book.facid = fac.facid
-WHERE book.slots IS NOT NULL AND starttime LIKE '%2012-09%'
+INNER JOIN bookings AS book ON book.facid = fac.facid
+WHERE DATE(book.starttime) >= '2012-09-01' AND DATE(book.starttime) <= '2012-09-30'
 GROUP BY fac.facid;
