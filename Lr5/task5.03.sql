@@ -3,6 +3,5 @@
 USE cd;
 SELECT CONCAT(mem.firstname, ' ', mem.surname) AS 'ФИО', COUNT(mem.memid) AS 'Кол-во рекомендаций'
 FROM members AS mem
-LEFT JOIN members AS mem1 ON mem1.recommendedby = mem.memid
-WHERE mem1.memid IS NOT NULL
+JOIN members AS mem1 ON mem1.recommendedby = mem.memid
 GROUP BY mem.memid;
