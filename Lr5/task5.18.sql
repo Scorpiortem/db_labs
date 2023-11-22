@@ -4,12 +4,20 @@
 Не забудьте учесть возможность того, что в день будет нулевой доход. 
 Примечание: используйте DATE_ADD для генерации серии дат.*/
 USE cd;
-SELECT
-    DATE(book.starttime) AS date,
-    SUM(IF(book.memid = 0, fac.guestcost, fac.membercost) * book.slots) AS Income,
-    AVG(fac.membercost + fac.guestcost) AS Moving_Avg_Income
-FROM bookings book
-JOIN facilities fac ON book.facid = fac.facid
-WHERE DATE(book.starttime) BETWEEN '2012-08-01' AND '2012-08-31'
-GROUP BY DATE(book.starttime)
-ORDER BY DATE(book.starttime);
+WITH RECURSIVE DateRange AS (
+    SELECT '2012-08-01 00:00:00' AS Дата
+    UNION ALL
+    SELECT DATE_ADD(Дата, INTERVAL 1 DAY) 
+    FROM DateRange 
+    WHERE Дата < '2012-08-31 23:59:59'
+),
+RevenuePerDay AS (
+    SELECT DateRange.Дата, COALESCE(SUM(b.slots), 0) AS total_revenue
+    FROM DateRange
+    LEFT JOIN bookings b ON DATE(b.starttime) = DateRange.Дата
+    GROUP BY Дата
+)
+SELECT Дата, ROUND((SELECT AVG(total_revenue) FROM RevenuePerDay RP 
+WHERE RP.Дата BETWEEN DATE_SUB(RPD.Дата, INTERVAL 14 DAY) AND RPD.Дата), 2) AS Скользящее_среднее
+FROM RevenuePerDay RPD
+ORDER BY Дата;
