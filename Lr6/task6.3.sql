@@ -1,7 +1,10 @@
 	/*Выберите процент использования объектов по месяцам, 
 	упорядочив по возрастанию*/
-USE cd;
-SELECT YEAR(starttime) AS Год, MONTH(starttime) AS Месяц,
-ROUND(COUNT(slots)/(SELECT COUNT(*) FROM bookings) * 100, 3) AS 'Процент использования объектов в месяц' FROM bookings
-GROUP BY Месяц, Год
-ORDER BY Месяц, Год;
+SELECT facility AS 'Объекты',
+MONTH(book.starttime) AS Месяц,
+(SUM(book.slots) / (SELECT SUM(slots) FROM bookings
+WHERE bookings.facid = fac.facility)) * 100 AS Процент_использования_объектов_в_месяц
+FROM bookings AS book
+INNER JOIN facilities AS fac ON book.facid = fac.facility
+GROUP BY fac.facility, Месяц
+ORDER BY Процент_использования_объектов_в_месяц ASC;
