@@ -2,7 +2,7 @@
 количество мест (slot). Убедитесь, что в случае ничьей все результаты 
 привязки будут выведены.Примечание: используйте функцию ранжирования*/
 USE cd;
-SELECT facid, slots
+SELECT DISTINCT facid, slots
 FROM (
   SELECT facid, slots, RANK() OVER (ORDER BY slots DESC) AS rnk
   FROM bookings
