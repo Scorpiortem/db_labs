@@ -7,20 +7,20 @@ WITH RECURSIVE DateRange AS (
     WHERE Date < '2012-08-31'
 ),
 TotalRevenue AS(
-SELECT Daterange.Date, 
-	Coalesce(SUM(
+SELECT Daterange.Date, SUM(IF(b.memid = 0, f.guestcost, f.membercost)*b.slots) AS income,
+	ROUND(AVG(SUM(
         CASE 
             WHEN b.memid = 0 THEN b.slots * f.guestcost 
             ELSE b.slots * f.membercost
-        END), 0) as total_revenue
+        END)) OVER win, 2) as rol_avg
     FROM Daterange
     LEFT JOIN bookings b ON DATE(b.starttime) = Date
     LEFT JOIN facilities f ON b.facid = f.facid
     LEFT JOIN members m ON b.memid = m.memid
     GROUP BY Date
+    WINDOW win as(
+    ORDER BY Date ROWS BETWEEN 14 PRECEDING AND CURRENT ROW
+    )
 )
- SELECT DISTINCT DATE, ROUND((SELECT SUM(total_revenue) FROM TotalRevenue TR  
- WHERE b.starttime > TR.Date - INTERVAL 14 DAY AND b.starttime < TRD.Date + INTERVAL 1 DAY) / 15, 2) AS moving_average_revenue
-FROM TotalRevenue TRD
-LEFT JOIN bookings b ON DATE(b.starttime) = Date
+SELECT * FROM TotalRevenue
 ORDER BY Date;
