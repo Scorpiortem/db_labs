@@ -2,4 +2,4 @@
 в названии слово  ‘Tennis’ в произвольном регистре.*/
 USE cd;
 SELECT facility AS 'Объекты' FROM facilities
-WHERE facility LIKE '%Tennis%';
+WHERE BINARY facility LIKE '%Tennis%' OR BINARY facility LIKE '%tennis%';
