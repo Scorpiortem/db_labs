@@ -7,20 +7,20 @@ WITH RECURSIVE DateRange AS (
     WHERE Date < '2012-08-31'
 ),
 TotalRevenue AS(
-SELECT Daterange.Date, SUM(IF(b.memid = 0, f.guestcost, f.membercost)*b.slots) AS income,
-	ROUND(AVG(SUM(
-        CASE 
-            WHEN b.memid = 0 THEN b.slots * f.guestcost 
-            ELSE b.slots * f.membercost
-        END)) OVER win, 2) as rol_avg
-    FROM Daterange
-    LEFT JOIN bookings b ON DATE(b.starttime) = Date
+SELECT DateRange.Date, IFNULL(SUM(
+		CASE 
+			WHEN(DATE(b.starttime) != Date) THEN 0
+            WHEN (b.memid = 0) THEN f.guestcost * b.slots
+            ELSE f.membercost * b.slots
+        END), 0) AS Доход,
+	IFNULL(ROUND(SUM(
+        IF(b.memid = 0, f.guestcost, f.membercost) * b.slots
+    ) / 15), 0) as Среднее_скользящее
+    FROM DateRange
+    LEFT JOIN bookings b ON DATE_ADD(Date, INTERVAL -14 day) <= DATE(b.starttime) AND DATE(b.starttime) <= Date
     LEFT JOIN facilities f ON b.facid = f.facid
     LEFT JOIN members m ON b.memid = m.memid
     GROUP BY Date
-    WINDOW win as(
-    ORDER BY Date ROWS BETWEEN 14 PRECEDING AND CURRENT ROW
-    )
 )
 SELECT * FROM TotalRevenue
-ORDER BY Date;
+ORDER BY Date;	
