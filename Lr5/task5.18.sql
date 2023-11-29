@@ -1,3 +1,8 @@
+/*Для каждого дня августа 2012 года рассчитайте скользящее 
+среднее общего дохода за предыдущие 15 дней. Вывод должен 
+содержать столбцы даты и дохода, отсортированные по дате. 
+Не забудьте учесть возможность того, что в день будет нулевой доход. 
+Примечание: используйте DATE_ADD для генерации серии дат.*/
 USE cd;
 WITH RECURSIVE DateRange AS (
     SELECT '2012-08-01' AS Date
@@ -13,7 +18,7 @@ SELECT DateRange.Date, IFNULL(SUM(
             WHEN (b.memid = 0) THEN f.guestcost * b.slots
             ELSE f.membercost * b.slots
         END), 0) AS Доход,
-	IFNULL(ROUND(SUM(
+	IFNULL((SUM(
         IF(b.memid = 0, f.guestcost, f.membercost) * b.slots
     ) / 15), 0) as Среднее_скользящее
     FROM DateRange
