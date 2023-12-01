@@ -21,4 +21,4 @@ BEGIN
 END$$
 DELIMITER ;
 SELECT CalculateRentalCost(memid, bookid) AS Стоимость_аренды
-FROM bookings;	
+FROM bookings;
