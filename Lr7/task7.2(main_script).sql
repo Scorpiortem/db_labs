@@ -24,15 +24,26 @@ CREATE TRIGGER insert_payment_record
 AFTER UPDATE ON bookings
 FOR EACH ROW
 BEGIN
-  IF NEW.payed != OLD.payed THEN
   CASE
+		WHEN NEW.payed = OLD.payed THEN 
+        BEGIN END;
 		WHEN NEW.payed = 1 THEN
 			INSERT INTO payments (bookid, payment) VALUES (NEW.bookid, CalculateRentalCost(NEW.memid, NEW.facid, NEW.slots));
 		WHEN NEW.payed = 0 THEN
         DELETE FROM payments AS pay 
         WHERE pay.bookid =  NEW.bookid;
 	END CASE;
-   END IF;
+END $$
+
+DROP TRIGGER IF EXISTS already_payed $$
+CREATE TRIGGER already_payed 
+AFTER INSERT ON bookings
+FOR EACH ROW 
+BEGIN
+	IF NEW.payed = 1 THEN
+		INSERT INTO payments(bookid, payment)
+        VALUES(NEW.bookid, CalculateRentalCost(NEW.memid, NEW.facid, NEW.slots));
+	END IF;
 END $$
 
 DELIMITER ;

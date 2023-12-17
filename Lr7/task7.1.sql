@@ -2,12 +2,13 @@
 (для каждой записи таблицы bookings).*/
 USE cd;
 DELIMITER $$
-DROP FUNCTION IF EXISTS CalculateRentalCost;
+DROP FUNCTION IF EXISTS CalculateRentalCost $$
 CREATE FUNCTION CalculateRentalCost(memid INT, facid INT, slots INT)
-RETURNS INT
-DETERMINISTIC
+RETURNS DECIMAL(10, 2)
+READS SQL DATA
+NOT DETERMINISTIC
 BEGIN
-    DECLARE Стоимость_аренды INT;
+    DECLARE Стоимость_аренды DECIMAL(10, 2);
     SET Стоимость_аренды = (SELECT 
 			IF(memid = 0, guestcost, membercost) * slots
 			FROM facilities
