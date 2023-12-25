@@ -5,18 +5,20 @@ USE cd;
 DELIMITER $$
 
 DROP PROCEDURE IF EXISTS payback $$
-CREATE PROCEDURE payback(currentDate DATE)
+CREATE PROCEDURE payback(currentfacid INT, mes INT, god INT)
 READS SQL DATA
 NOT DETERMINISTIC
-  BEGIN
-    SELECT book.facid, fac.facility, SUM(pay.payment) - fac.monthlymaintenance AS Доход
-	FROM bookings AS book
-	JOIN payments AS pay ON book.bookid = pay.bookid
-	JOIN facilities AS fac ON book.facid = fac.facid
-	WHERE DATE_FORMAT(starttime, '%y %m') = DATE_FORMAT(currentDate, '%y %m')
-	GROUP BY book.facid ORDER BY book.facid;
+BEGIN
+	WITH temp AS(
+      SELECT b.starttime AS Дата, SUM(p.payment) OVER (
+      ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) - f.initialoutlay AS Доход
+        FROM payments AS p
+		JOIN bookings AS b ON b.bookid = p.bookid
+		JOIN facilities AS f ON b.facid = f.facid
+        WHERE currentfacid = b.facid AND
+		MONTH(starttime) = mes AND YEAR(starttime) = god
+        ORDER BY b.starttime)
+    SELECT Дата FROM temp WHERE Доход > 0 LIMIT 1;	
   END $$
 
-DELIMITER ;
-
-CALL payback('2012-07-18');
+CALL payback(4, MONTH('2012-07-18'), YEAR('2012-07-18'));
